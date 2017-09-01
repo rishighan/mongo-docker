@@ -1,23 +1,16 @@
 #!/bin/bash
-# steps:
-# check if mongo-seed directory exists
-# if it does, do a mongorestore, which creates databases, and re-creates indices
-# if not,
+# ref: mongodump --host localhost --db rishighan
+# run command like so ./run.sh </path/to/dump/>
+
+# if path/to/dump is not empty and contains .bson, do a mongorestore,
+# which creates databases, and re-creates indices
+
 args=("$@")
-# 1. exact path to mongo seed directory containing BSON dump
-# 2.
-
-
-if [ -d ${args[0]} ]; then
-    files=(${args[0]})
-    if [ -z "$(ls -A ${args[0]})" ]; then
-        echo "Directory is empty"
+if [ -d ${args[0]} ] && [ -z "$(ls -A ${args[0]})" ]; then
+    files=(${args[0]}/*.bson)
+        echo "Directory \"${args[0]}\" is empty"
     else
-        echo "Directory not empty, proceeding"
+        echo "BSON data found in ${args[0]}, proceeding"
     fi
-#    echo "Found seed data in: ${args[0]}"
-    #cd into this directory and run mongorestore
-    # Control will enter here if $DIRECTORY exists.
-fi
 
 
