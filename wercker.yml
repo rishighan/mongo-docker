@@ -1,0 +1,43 @@
+box: pivotaldata/ubuntu:16
+build:
+  steps:
+    - script:
+      name: "empty Build Step"
+      code: echo "empty build step"
+
+deploy:
+  steps:
+    - script:
+        name: "Install mongo"
+        code: |
+          apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+          echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' > /etc/apt/sources.list.d/mongodb.list
+          apt-get update
+          apt-get install -y mongodb-org
+          rm -rf /var/lib/apt/lists/*
+    - internal/docker-push:
+      username: $DOCKER_USERNAME
+      password: $DOCKER_PASSWORD
+      repository: $DOCKER_USERNAME/$DOCKER_IMAGE
+      ports: "27017"
+      cmd: "/bin/bash -c \"mongod\""
+
+    - add-ssh-key:
+        keyname: DIGITALOCEAN
+    - add-to-known_hosts:
+        hostname: $DIGITALOCEAN_HOST
+    - script:
+        name: pull latest image
+        code: ssh root@$DIGITALOCEAN_HOST docker pull $DOCKER_USERNAME/$DOCKER_IMAGE:latest
+    - script:
+        name: stop running container
+        code: ssh root@$DIGITALOCEAN_HOST docker stop rgmongo || echo "failed to stop running container"
+    - script:
+        name: remove stopped container
+        code: ssh root@$DIGITALOCEAN_HOST docker rm rgmongo || echo "failed to remove stopped container"
+    - script:
+        name: remove image behind stopped container
+        code: ssh root@$DIGITALOCEAN_HOST docker rmi -f $DOCKER_USERNAME/$DOCKER_IMAGE:latest || echo "failed to remove image behind stopped container"
+    - script:
+        name: run new container
+        code: ssh root@$DIGITALOCEAN_HOST docker run -d -v /data:/data -p 27017:27017 --name rgmongo $DOCKER_USERNAME/$DOCKER_IMAGE:latest
