@@ -20,7 +20,7 @@ deploy:
       password: $DOCKER_PASSWORD
       repository: $DOCKER_USERNAME/$DOCKER_IMAGE
       ports: "27017"
-      cmd: "/bin/bash -c \"mongod\""
+      cmd: "/bin/bash -c \"$(which mongod) --smallfiles --dbpath /data\""
 
     - add-ssh-key:
         keyname: DIGITALOCEAN
