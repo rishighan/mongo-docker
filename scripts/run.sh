@@ -1,5 +1,6 @@
 #!/bin/bash
-# ref: mongodump --host localhost --db rishighan
+# ref: mongodump --host localhost --db <database name>
+# ref: mongorestore --drop -d <database name> </path/to/dump/>
 # run command like so ./run.sh </path/to/dump/> <mongo database>
 
 # if path/to/dump is not empty and contains .bson,
