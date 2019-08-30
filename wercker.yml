@@ -14,7 +14,7 @@ deploy:
           echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
           #echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
           sudo apt-get update
-          apt-get install -y mongodb-org openssh-client openssh-server
+          apt-get install -y --allow-unauthenticated mongodb-org openssh-client openssh-server
           rm -rf /var/lib/apt/lists/*
     - internal/docker-push:
       username: $DOCKER_USERNAME
